@@ -1,0 +1,42 @@
+language: python
+python:
+- 3.5
+env:
+  matrix:
+  - FORMAT=hst
+  - FORMAT=fxt
+addons:
+  apt:
+    packages:
+    - realpath
+    - pv
+notifications:
+  email: false
+before_install:
+- set -e
+install: 
+before_script:
+- curl -o Makefile https://raw.githubusercontent.com/FX31337/FX-BT-Data-Test/master/Makefile
+script:
+- make $FORMAT
+after_success: 
+after_failure:
+- sudo apt-get -qy install tree && - tree -d -L 6
+- env
+after_script:
+- pwd
+deploy:
+  provider: releases
+  api_key:
+    secure: ACtaK/M36XnzhKxSA83+UR5UGhagia0AZtwS/HYIjOxRpGQBzQ6DTJFVTyK1jLWGblQmVbchu8qWCyZUmRHMWgScAXD8W24VdNmpO10rZ1EqhNwuQUUfOKArCrnHIi7PxIzKznBAP0s4PK75LfIidD0PWXOA+etO9YUZ9AsJ7vWbuVTg4PV4IlegcqvwNpi83fhdjiTYJPUe9vz+c2Ow8HFReNqkvE2wEGmcvgO8HflB+Xie395LVl+U/60eCek6Faq6jZ9Ao2ofwqBOm+6n9mGfIj37/ZO6SAdFY8ErhSLjri1IdtnOISIZBCYQ8G5j2W6ycalyJHqqZVoM17moyEFNAsvN99IdIGG9w/GXjHutn4WZa9zjXz2FlW4oPvX5QuJOQERStW3rjjfib+1py6/mhkwwUodHeYDKpuPCAd1724QMhbIGMnx3Wz4obfra95BxxGn92tqEIKpTmlsyo1ThT51h+dNjtneTAMEK4E5VALu4L2bD1eQ8Wvc8+Uy0B+uwgfLynNBXZnVBmdrDQFjCsDopjuXXj3cxCxZa2KIfBNryN/kNgb7I8WQencFNmLLdnpxMySiaR1sDs4ILqh7KvQDsZBbZ2okhTwrzQ/RKsfgJ3HWN5AViuiLiRdSpTtRzxbWto+GSfAdlXeldt3JgI8t8UwoGJb6/okeHSHA=
+  file:
+    - "*.hst.gz"
+    - "*.fxt.gz"
+  file_glob: true
+  skip_cleanup: true
+  overwrite: true
+  on:
+    repo: FX31337/FX-BT-Data-XAGUSD-DS
+    tags: true
+after_deploy:
+- make clean
